@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>.</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      background: #050505;
+      color: #c8c8c8;
+      font-family: "Times New Roman", Times, serif;
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100%;
+      padding: 48px 16px;
+      overflow: hidden;
+      position: relative;
+    }
+    .machine {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .pc {
+      width: min(520px, 88vw);
+      opacity: 0.28;
+      filter: contrast(1.05);
+      animation: breathe 6s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0%, 100% { opacity: 0.22; transform: translateY(0); }
+      50% { opacity: 0.34; transform: translateY(-4px); }
+    }
+    .crt { fill: #0b120b; }
+    .bezel { fill: #1a1a18; }
+    .case { fill: #2a2a26; }
+    .lip { fill: #3a3a34; }
+    .slot { fill: #0a0a0a; }
+    .led { fill: #6cff6c; animation: led 1.8s steps(2, end) infinite; }
+    @keyframes led { 50% { fill: #163616; } }
+    .screen-glow { fill: #163816; animation: glow 3.2s ease-in-out infinite; }
+    @keyframes glow { 0%, 100% { opacity: 0.55; } 50% { opacity: 0.9; } }
+    .scan {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 210px;
+      height: 148px;
+      transform: translate(-50%, calc(-50% - 78px));
+      background: repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0,0,0,.35) 2px 3px);
+      mix-blend-mode: multiply;
+      opacity: 0.7;
+      animation: scan 8s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes scan { from { background-position: 0 0; } to { background-position: 0 80px; } }
+    .term {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 190px;
+      transform: translate(-50%, calc(-50% - 86px));
+      font-family: "Courier New", Courier, monospace;
+      font-size: 9px;
+      line-height: 1.45;
+      color: #6adf6a;
+      text-shadow: 0 0 6px #2dff2d;
+      white-space: pre;
+      opacity: 0.85;
+    }
+    .term .cursor {
+      display: inline-block;
+      width: 6px;
+      height: 10px;
+      background: #6adf6a;
+      margin-left: 1px;
+      vertical-align: -1px;
+      animation: blink 1s steps(1) infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+    .flicker {
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.012);
+      animation: flick 0.12s infinite;
+      pointer-events: none;
+      z-index: 1;
+    }
+    @keyframes flick {
+      0%, 100% { opacity: 0; }
+      92% { opacity: 0; }
+      93% { opacity: 1; }
+      94% { opacity: 0; }
+    }
+    .wrap {
+      width: min(340px, 86vw);
+      opacity: 0;
+      animation: in 2.4s ease 0.5s forwards;
+      position: relative;
+      z-index: 2;
+    }
+    @keyframes in { to { opacity: 1; } }
+    form { display: flex; flex-direction: column; gap: 22px; }
+    input, textarea {
+      background: rgba(5,5,5,0.55);
+      border: none;
+      border-bottom: 1px solid #2a2a2a;
+      color: #e8e8e8;
+      font-family: inherit;
+      font-size: 16px;
+      padding: 8px 0;
+      outline: none;
+      width: 100%;
+      resize: none;
+      transition: border-color 0.4s;
+    }
+    input:focus, textarea:focus { border-color: #888; }
+    textarea { height: 64px; }
+    input::placeholder, textarea::placeholder { color: #3a3a3a; }
+    button {
+      background: none;
+      border: none;
+      color: #555;
+      font-family: inherit;
+      font-size: 13px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      cursor: pointer;
+      align-self: flex-end;
+      padding: 8px 0 0;
+      transition: color 0.3s;
+    }
+    button:hover { color: #ccc; }
+    .done { display: none; text-align: center; max-width: 280px; margin: 0 auto; }
+    .done p { color: #6a6a6a; font-size: 15px; line-height: 1.7; letter-spacing: 0.04em; }
+    .done em {
+      display: block;
+      margin-top: 28px;
+      font-style: normal;
+      font-size: 11px;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      color: #3a3a3a;
+    }
+    .hp { position: absolute; overflow: hidden; clip: rect(0 0 0 0); height: 1px; width: 1px; margin: -1px; padding: 0; border: 0; }
+  </style>
+</head>
+<body>
+  <div class="machine" aria-hidden="true">
+    <svg class="pc" viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg">
+      <rect class="case" x="46" y="8" width="228" height="168" rx="6"/>
+      <rect class="bezel" x="62" y="22" width="196" height="140" rx="4"/>
+      <rect class="screen-glow" x="74" y="34" width="172" height="116" rx="3"/>
+      <rect class="crt" x="78" y="38" width="164" height="108" rx="2"/>
+      <rect class="lip" x="40" y="176" width="240" height="14" rx="2"/>
+      <rect class="case" x="70" y="190" width="180" height="72" rx="4"/>
+      <rect class="slot" x="86" y="204" width="70" height="8" rx="1"/>
+      <rect class="slot" x="86" y="218" width="70" height="8" rx="1"/>
+      <circle class="led" cx="228" cy="214" r="3.5"/>
+      <rect x="168" y="236" width="64" height="10" rx="1" fill="#cfc8b4"/>
+    </svg>
+    <div class="scan"></div>
+    <div class="term" id="term"></div>
+  </div>
+  <div class="flicker"></div>
+  <div class="wrap">
+    <form name="inquiry" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" id="f">
+      <input type="hidden" name="form-name" value="inquiry">
+      <p class="hp"><input name="bot-field"></p>
+      <input type="text" name="name" placeholder="who" required autocomplete="name">
+      <input type="email" name="email" placeholder="where" required autocomplete="email">
+      <textarea name="the_work" placeholder="the work — what it is, who it's for, what the site must do" required></textarea>
+      <textarea name="look" placeholder="sites that feel right"></textarea>
+      <input type="text" name="when" placeholder="when">
+      <button type="submit">knock</button>
+    </form>
+    <div class="done" id="d">
+      <p>there is no confirmation email.<br>if it fits, a number finds you.</p>
+      <em>don't tell the room</em>
+    </div>
+  </div>
+  <script>
+    const lines = ['WAITING.', 'NO CARRIER', 'KNOCK /', '_];
+    const el = document.getElementById('term');
+    let i = 0;
+    function tick() {
+      const full = lines.join('\n');
+      if (i <= full.length) {
+        el.innerHTML = full.slice(0, i).replace(/\n/g, '<br>') + '<span class="cursor"></span>';
+        i++;
+        setTimeout(tick, 90 + Math.random() * 80);
+      } else {
+        setTimeout(() => { i = 0; tick(); }, 4200);
+      }
+    }
+    tick();
+    const form = document.getElementById('f');
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(new FormData(form)).toString()
+      }).finally(() => {
+        form.style.display = 'none';
+        document.getElementById('d').style.display = 'block';
+      });
+    });
+  </script>
+</body>
+</html>
